@@ -21,14 +21,26 @@ export const WHITE_TEXTURE_URI =
  *
  * If any image URL is empty/undefined/null, a white texture is used via a data URI.
  */
-export const createPages = (pages: string[], thickness: number): PageDefinition[] => {
+export const createPages = (
+  pages: string[],
+  thickness: number,
+  fallbackColor: string
+): PageDefinition[] => {
   const ret: PageDefinition[] = [];
 
-  for (let i = 0; i < pages.length; i += 2) {
-    // Process the front page, use white texture if URL is falsy
-    const frontImage = pages[i] || WHITE_TEXTURE_URI;
+  if (pages.length > 0) {
+    // Primeira página: frente nula, verso é a primeira imagem
+    ret.push({
+      front: undefined,
+      back: pages[0] || WHITE_TEXTURE_URI,
+      thickness,
+      color: fallbackColor,
+    });
+  }
 
-    // Process the back page, handle both odd page count and falsy URLs
+  // Começar do índice 1, pois a primeira imagem já foi usada
+  for (let i = 1; i < pages.length; i += 2) {
+    const frontImage = pages[i] || WHITE_TEXTURE_URI;
     const backImage =
       i + 1 < pages.length
         ? pages[i + 1] || WHITE_TEXTURE_URI
@@ -38,6 +50,7 @@ export const createPages = (pages: string[], thickness: number): PageDefinition[
       front: frontImage,
       back: backImage,
       thickness,
+      color: fallbackColor,
     });
   }
 

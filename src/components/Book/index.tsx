@@ -20,10 +20,10 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
   const gathererRef = useRef<PagesGathererActions>(null);
 
   const { bookRef, currentPage, setPage } = useBookActions(ref);
-  
+
   const bookImages = useBookStore((state) => state.images);
   const bookAngle = useBookStore((state) => state.angle);
-  
+
   const pageThickness = usePageStore((state) => state.thickness);
 
   const coverThickness = useCoverStore((state) => state.thickness);
@@ -31,7 +31,11 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
   const coverInsideColor = useCoverStore((state) => state.insideColor);
 
   const pages = useMemo(() => {
-    const pairedPages = createPages(bookImages, pageThickness);
+    const pairedPages = createPages(
+      bookImages,
+      pageThickness,
+      coverInsideColor
+    );
 
     return [
       {

@@ -10,9 +10,9 @@ interface TableProps {
 
 export const Table = forwardRef<Group, TableProps>(
   ({ topHeight = 0.05, footerRadius = 0.5, footerHeight = 10 }, ref) => {
-    const width = useCoverStore((state) => state.width);
+    const totalWidth = useCoverStore((state) => state.totalWidth);
 
-    const topRadius = width * 0.75;
+    const topRadius = totalWidth * 0.75;
 
     return (
       <group ref={ref}>

@@ -7,12 +7,13 @@ type CoverState = BookSettings["cover"] & {
 
 export const useCoverStore = create<CoverState>((set) => ({
   loaded: false,
-  width: 0,
-  height: 0,
+  totalWidth: 0,
+  totalHeight: 0,
   thickness: 0,
   front: null,
   back: null,
-  insideColor: "#9c8672",
+  insideColor: "#afafaf",
+  outsideColor: "#5f5f5f",
   spineWidth: 0,
   guardWidth: 0,
   updateCover: (partial) => set((state) => ({ ...state, ...partial })),

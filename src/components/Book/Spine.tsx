@@ -27,12 +27,12 @@ export const Spine = forwardRef<SpineActions, SpineProps>(({}, ref) => {
   const meshRef = useRef<SkinnedMesh>(null);
   const solverRef = useRef<CCDIKSolver>(null);
 
-  const height = useCoverStore((state) => state.height);
+  const height = useCoverStore((state) => state.totalHeight);
   const thickness = useCoverStore((state) => state.thickness);
 
   const spineWidth = useCoverStore((state) => state.spineWidth);
   const guardWidth = useCoverStore((state) => state.guardWidth);
-  const insideColor = useCoverStore((state) => state.insideColor);
+  const outsideColor = useCoverStore((state) => state.outsideColor);
 
   const totalWidth = useMemo(() => {
     return spineWidth + guardWidth * 2;
@@ -154,7 +154,7 @@ export const Spine = forwardRef<SpineActions, SpineProps>(({}, ref) => {
       new MeshStandardMaterial({
         visible: true,
         // TODO: usar textura de imagem depois da demo
-        color: insideColor,
+        color: outsideColor,
         roughness: 0.1,
       })
     );
@@ -166,7 +166,7 @@ export const Spine = forwardRef<SpineActions, SpineProps>(({}, ref) => {
     mesh.bind(skeleton);
 
     return { geometry, mesh };
-  }, [bones, insideColor, totalWidth, height, thickness, guardWidth]);
+  }, [bones, outsideColor, totalWidth, height, thickness, guardWidth]);
 
   useImperativeHandle(ref, () => ({
     getBones: () => bones,

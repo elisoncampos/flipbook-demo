@@ -5,21 +5,21 @@ import { Group } from "three";
 interface CoverPageProps {}
 
 export const CoverPage = forwardRef<Group, CoverPageProps>((_, ref) => {
-  const coverWidth = useCoverStore((state) => state.width);
-  const coverHeight = useCoverStore((state) => state.height);
+  const totalWidth = useCoverStore((state) => state.totalWidth);
+  const coverHeight = useCoverStore((state) => state.totalHeight);
   const coverThickness = useCoverStore((state) => state.thickness);
   const coverGuardWidth = useCoverStore((state) => state.guardWidth);
   const coverSpineWidth = useCoverStore((state) => state.spineWidth);
-  const coverInsideColor = useCoverStore((state) => state.insideColor);
+  const coverOutsideColor = useCoverStore((state) => state.outsideColor);
 
   const realWidth = useMemo(() => {
     return (
-      coverWidth / 2 -
+      totalWidth / 2 -
       coverGuardWidth -
       coverSpineWidth / 2 -
       coverThickness / 2
     );
-  }, [coverWidth, coverGuardWidth, coverSpineWidth, coverThickness]);
+  }, [totalWidth, coverGuardWidth, coverSpineWidth, coverThickness]);
 
   return (
     <group ref={ref}>
@@ -31,7 +31,7 @@ export const CoverPage = forwardRef<Group, CoverPageProps>((_, ref) => {
         <meshStandardMaterial
           attach="material"
           // TODO: usar textura em imagem depois da demo
-          color={coverInsideColor}
+          color={coverOutsideColor}
           roughness={0.1}
           side={2}
         />

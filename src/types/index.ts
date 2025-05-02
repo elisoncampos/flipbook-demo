@@ -16,12 +16,13 @@ export type BookSettings = {
   };
   cover: {
     loaded: boolean;
-    width: number;
-    height: number;
+    totalWidth: number;
+    totalHeight: number;
     front: string | null;
     back: string | null;
     thickness: number;
     insideColor: string;
+    outsideColor: string;
     spineWidth: number;
     guardWidth: number;
   };

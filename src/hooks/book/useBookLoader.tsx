@@ -91,13 +91,13 @@ export function useBookLoader({
         const size = calculateSize(image);
         if (!size) return;
 
-        const coverWidth =
+        const totalWidth =
           frontCover && backCover ? size.width * 2 : size.width;
 
         updateCover({
           loaded: true,
-          width: coverWidth,
-          height: size.height,
+          totalWidth,
+          totalHeight: size.height,
           front: frontCover,
           back: backCover,
         });
