@@ -39,7 +39,10 @@ export function useBookLoader({
 
   const updateBook = useBookStore((state) => state.updateBook);
   const updatePage = usePageStore((state) => state.updatePage);
+  const pageLoaded = usePageStore((state) => state.loaded);
+
   const updateCover = useCoverStore((state) => state.updateCover);
+  const coverLoaded = useCoverStore((state) => state.loaded);
 
   useEffect(() => {
     updateBook({ images });
@@ -101,4 +104,10 @@ export function useBookLoader({
       })
       .catch(() => updateCover({ loaded: true }));
   }, [frontCover, backCover, updateCover]);
+
+  useEffect(() => {
+    if (pageLoaded && coverLoaded) {
+      updateBook({ loaded: true });
+    }
+  }, [pageLoaded, coverLoaded, updateBook]);
 }

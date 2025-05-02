@@ -1,11 +1,10 @@
-import { Object3D, Group } from "three";
+import { Vector3, Object3D, Group, Box3 } from "three";
 import { Book } from "@/components/Book";
 import { Table } from "@/components/Table";
 import { Camera } from "./Camera";
 import { useEffect, useRef, useState } from "react";
 import { BookActions } from "@/types";
 import { FlipbookEnvironment } from "./FlipbookEnvironment";
-import { useCoverStore } from "@/stores/cover";
 
 interface FlipbookSceneProps {
   bookRef: React.RefObject<BookActions | null>;
@@ -17,18 +16,42 @@ export const FlipbookScene = ({
   environmentUrl,
 }: FlipbookSceneProps) => {
   const tableRef = useRef<Group>(null);
-  const coverHeight = useCoverStore((state) => state.height);
+
   const [target, setTarget] = useState<Object3D>();
 
   useEffect(() => {
-    if (!bookRef.current || !tableRef.current) return;
-    const bookObj = bookRef.current.getObject();
+    let frameId: number;
 
-    tableRef.current.add(bookObj);
-    bookObj.position.set(0, coverHeight / 2, 0);
+    const tryPositionBook = () => {
+      if (!bookRef.current || !tableRef.current) {
+        frameId = requestAnimationFrame(tryPositionBook);
+        return;
+      }
 
-    setTarget(bookObj);
-  }, [coverHeight, bookRef]);
+      const bookObj = bookRef.current.getObject();
+      if (!bookObj) {
+        frameId = requestAnimationFrame(tryPositionBook);
+        return;
+      }
+
+      const tableWorldPos = tableRef.current.getWorldPosition(new Vector3());
+      const tableBox = new Box3().setFromObject(tableRef.current);
+      const tableTopY = tableBox.max.y;
+
+      const bookBox = new Box3().setFromObject(bookObj);
+      const bookHeight = bookBox.max.y - bookBox.min.y;
+
+      const newBookY = tableTopY + bookHeight / 2;
+
+      bookObj.position.set(tableWorldPos.x, newBookY, tableWorldPos.z);
+
+      setTarget(bookObj);
+    };
+
+    frameId = requestAnimationFrame(tryPositionBook);
+
+    return () => cancelAnimationFrame(frameId);
+  }, []);
 
   return (
     <group>
