@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import Flipbook from "./components/Flipbook";
+import { useFlipbook } from "./hooks/flipbook/useFlipbook";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const pages = Array.from(
+    { length: 32 },
+    (_, i) => `https://picsum.photos/id/${i + 1}/2840/2840`
+  );
+
+  const frontCover = "https://picsum.photos/id/1/3000/3000";
+  const backCover = "https://picsum.photos/id/1/3000/3000";
+
+  const { book } = useFlipbook();
+  const { nextPage, prevPage, setPage } = book;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      <div
+        style={{
+          margin: "0 auto",
+          width: "fit-content",
+        }}
+      >
+        <button onClick={prevPage}>previousPage</button>
+        <button onClick={() => setPage(5)}>Flip to Page 5</button>
+        <button onClick={nextPage}>nextPage</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
 
-export default App
+      <div style={{ width: "100vw", height: "100vh" }}>
+        <Flipbook
+          book={book}
+          pages={pages}
+          frontCover={frontCover}
+          backCover={backCover}
+          environmentUrl="family-2.jpg"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default App;
