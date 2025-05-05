@@ -1,5 +1,3 @@
-import { Group } from "three";
-
 export type BookSettings = {
   book: {
     loaded: boolean;
@@ -36,7 +34,6 @@ export type PageDefinition = {
 };
 
 export type BookActions = {
-  getObject: () => Group;
   nextPage: () => void;
   prevPage: () => void;
   setPage: (page: number) => void;

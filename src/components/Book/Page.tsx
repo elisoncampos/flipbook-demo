@@ -31,7 +31,7 @@ export const Page = forwardRef<Group, PageProps>(({ data, onClick }, ref) => {
           color="#f5f2e9"
         />
       )),
-    []
+    [paperTexture]
   );
 
   return (

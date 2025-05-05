@@ -20,9 +20,7 @@ export interface SpineActions {
   getObject: () => Group | null;
 }
 
-interface SpineProps {}
-
-export const Spine = forwardRef<SpineActions, SpineProps>(({}, ref) => {
+export const Spine = forwardRef<SpineActions>((_, ref) => {
   const innerRef = useRef<Group>(null);
   const meshRef = useRef<SkinnedMesh>(null);
   const solverRef = useRef<CCDIKSolver>(null);
@@ -200,7 +198,7 @@ export const Spine = forwardRef<SpineActions, SpineProps>(({}, ref) => {
               rotationMax: new Vector3(0, degToRad(360), 0),
             },
           ],
-          iterations: 360,
+          iterations: 10,
           maxAngle: degToRad(0.5),
         },
       ];

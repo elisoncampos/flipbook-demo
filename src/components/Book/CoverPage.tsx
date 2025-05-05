@@ -2,9 +2,7 @@ import { useCoverStore } from "@/stores/cover";
 import { forwardRef, useMemo } from "react";
 import { Group } from "three";
 
-interface CoverPageProps {}
-
-export const CoverPage = forwardRef<Group, CoverPageProps>((_, ref) => {
+export const CoverPage = forwardRef<Group>((_, ref) => {
   const totalWidth = useCoverStore((state) => state.totalWidth);
   const coverHeight = useCoverStore((state) => state.totalHeight);
   const coverThickness = useCoverStore((state) => state.thickness);

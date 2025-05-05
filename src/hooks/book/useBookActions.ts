@@ -57,16 +57,13 @@ export const useBookActions = (ref: React.Ref<BookActions | null>) => {
     };
   }, [currentPage, totalPages]);
 
-  const setPage = (index: number) => {
-    setCurrentPage(index);
-  };
 
   const nextPage = () => {
-    setPage(currentPage + 1);
+    setCurrentPage(currentPage + 1);
   };
 
   const prevPage = () => {
-    setPage(currentPage - 1);
+    setCurrentPage(currentPage - 1);
   };
 
   // ref will receive book actions and object actions
@@ -75,7 +72,9 @@ export const useBookActions = (ref: React.Ref<BookActions | null>) => {
       getObject,
       nextPage,
       prevPage,
-      setPage,
+      setPage: (page: number) => {
+        setCurrentPage(page);
+      },
     };
   });
 
@@ -97,6 +96,6 @@ export const useBookActions = (ref: React.Ref<BookActions | null>) => {
     getObject,
     nextPage,
     prevPage,
-    setPage,
+    setCurrentPage,
   };
 };

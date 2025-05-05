@@ -1,14 +1,11 @@
+import { useCoverStore } from "@/stores/cover";
 import { OrbitControls } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
-import { Object3D, Vector3 } from "three";
+import { useEffect, useMemo, useState } from "react";
+import { Vector3 } from "three";
 
-interface CameraProps {
-  target: Object3D | undefined;
-}
-
-export const Camera = ({ target }: CameraProps) => {
-  const controlsRef = useRef<any>(null);
+export const Camera = () => {
   const [autoRotate, setAutoRotate] = useState(true);
+  const coverHeight = useCoverStore((state) => state.totalHeight);
 
   useEffect(() => {
     let timeoutId: number;
@@ -28,10 +25,16 @@ export const Camera = ({ target }: CameraProps) => {
     };
   }, []);
 
+  const position = useMemo(() => {
+    const x = 0;
+    const y = coverHeight / 2;
+    const z = 0;
+    return new Vector3(x, y, z);
+  }, [coverHeight])
+
   return (
     <OrbitControls
-      ref={controlsRef}
-      target={target ? target.position : new Vector3(0, 0, 0)}
+      target={position}
       enablePan={true}
       enableZoom={true}
       enableRotate={true}

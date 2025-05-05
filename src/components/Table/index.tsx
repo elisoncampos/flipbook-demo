@@ -1,6 +1,6 @@
 import { useCoverStore } from "@/stores/cover";
 import { forwardRef } from "react";
-import { Group, DoubleSide } from "three";
+import { Group, FrontSide } from "three";
 
 interface TableProps {
   topHeight?: number;
@@ -11,42 +11,31 @@ interface TableProps {
 export const Table = forwardRef<Group, TableProps>(
   ({ topHeight = 0.05, footerRadius = 0.5, footerHeight = 10 }, ref) => {
     const totalWidth = useCoverStore((state) => state.totalWidth);
-
     const topRadius = totalWidth * 0.75;
 
     return (
-      <group ref={ref}>
-        {/* Tampo da mesa redonda de vidro */}
-        <mesh position={[0, topHeight / 2, 0]} receiveShadow castShadow>
-          <cylinderGeometry args={[topRadius, topRadius, topHeight, 64]} />
+      <group ref={ref} position={[0, -topHeight, 0]}>
+        <mesh position={[0, topHeight / 2, 0]} castShadow receiveShadow>
+          <cylinderGeometry args={[topRadius, topRadius, topHeight, 48]} />
           <meshStandardMaterial
-            attach="material"
-            color={0x1e2a3d} // Azul escuro para o vidro
+            color={0x1e2a3d}
             transparent={true}
-            opacity={0.8} // Opacidade do vidro
-            roughness={0.0} // Superfície completamente lisa
-            metalness={0.0} // Vidro não é metálico
-            envMapIntensity={1.0} // Reflexão do ambiente com maior intensidade
-            flatShading={false} // Sombramento suave
-            side={DoubleSide} // Aplica o material a ambos os lados da geometria
+            opacity={0.85}
+            roughness={0.05}
+            metalness={0.1}
+            side={FrontSide}
           />
         </mesh>
 
-        {/* Pé central da mesa com material metálico */}
-        <mesh
-          position={[0, -footerHeight / 2 - topHeight / 2, 0]}
-          receiveShadow
-          castShadow
-        >
+        <mesh position={[0, -footerHeight / 2 - topHeight / 2, 0]}>
           <cylinderGeometry
-            args={[footerRadius / 2, footerRadius / 2, footerHeight, 32]}
+            args={[footerRadius / 2, footerRadius / 2, footerHeight, 16]}
           />
           <meshStandardMaterial
-            attach="material"
-            color={0x808080}
-            roughness={0.2}
-            metalness={0.9}
-            side={DoubleSide}
+            color={0x777777}
+            roughness={0.3}
+            metalness={0.6}
+            side={FrontSide}
           />
         </mesh>
       </group>

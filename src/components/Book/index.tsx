@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useMemo, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 import { useBookActions } from "@/hooks/book/useBookActions";
 import { Group } from "three";
 import { createPages } from "@/utils/createPages";
@@ -19,7 +19,7 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
 
   const gathererRef = useRef<PagesGathererActions>(null);
 
-  const { bookRef, currentPage, setPage } = useBookActions(ref);
+  const { bookRef, currentPage, setCurrentPage } = useBookActions(ref);
 
   const bookImages = useBookStore((state) => state.images);
   const bookAngle = useBookStore((state) => state.angle);
@@ -29,6 +29,8 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
   const coverThickness = useCoverStore((state) => state.thickness);
   const coverGuardWidth = useCoverStore((state) => state.guardWidth);
   const coverInsideColor = useCoverStore((state) => state.insideColor);
+  const coverHeight = useCoverStore((state) => state.totalHeight);
+  const coverSpineWidth = useCoverStore((state) => state.spineWidth);
 
   const pages = useMemo(() => {
     const pairedPages = createPages(
@@ -78,6 +80,11 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
     targetBone.position.z = coverGuardWidth + coverThickness / 2;
   }, [coverGuardWidth, coverThickness]);
 
+  const handlePageClick = useCallback((index: number) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentPage((prevPage) => (prevPage - 1 === index ? index : index + 1));
+  }, [setCurrentPage]);
+
   const renderedPages = useMemo(() => {
     return pages.map((item, index) => (
       <Page
@@ -86,20 +93,13 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
         }}
         key={index}
         data={item}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (currentPage - 1 === index) {
-            setPage(index);
-          } else {
-            setPage(index + 1);
-          }
-        }}
+        onClick={handlePageClick(index)}
       />
     ));
-  }, [pages, currentPage, setPage]);
+  }, [pages, handlePageClick]);
 
   return (
-    <group ref={bookRef} rotation-x={-bookAngle}>
+    <group ref={bookRef} rotation-x={-bookAngle} position={[coverSpineWidth / 2, coverHeight / 2, 0]}>
       <CoverPage ref={frontRef} />
       <CoverPage ref={backRef} />
       <PagesGatherer
