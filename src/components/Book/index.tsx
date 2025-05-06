@@ -73,10 +73,10 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
     if (!spineBones) return;
 
     const spine = spineRef.current.getObject()!;
-    back.add(spine);
+    front.add(spine);
 
     const targetBone = spineBones[spineBones.length - 1];
-    front.add(targetBone);
+    back.add(targetBone);
     targetBone.position.z = coverGuardWidth + coverThickness / 2;
   }, [coverGuardWidth, coverThickness]);
 
