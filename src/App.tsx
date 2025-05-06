@@ -1,10 +1,8 @@
-import { Suspense } from "react";
 import "./App.css";
 import Flipbook from "./components/Flipbook";
 import { useFlipbook } from "./hooks/flipbook/useFlipbook";
 import { crop } from "./utils/crop";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react";
-import Loader from "./components/Loader";
 
 const App = () => {
   const images = [
