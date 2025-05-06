@@ -57,18 +57,18 @@ export const Book = forwardRef<BookActions | null>((_, ref) => {
     if (!pagesRef.current) return;
     if (!frontRef.current) return;
     if (!backRef.current) return;
-    if (!spineRef.current) return;
-
+    
     gathererRef.current.assingPages(pagesRef.current);
-
+    
     const front = frontRef.current;
     pagesRef.current[0].add(front);
     front.position.x = -coverThickness / 2;
-
+    
     const back = backRef.current;
     pagesRef.current[pagesRef.current.length - 1].add(back);
     back.position.x = coverThickness / 2;
-
+    
+    if (!spineRef.current) return;
     const spineBones = spineRef.current.getBones();
     if (!spineBones) return;
 

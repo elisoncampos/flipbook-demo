@@ -19,14 +19,14 @@ export const useBones = ({ pagesData }: UseBones) => {
     const rootBone = new Bone();
     rootBone.name = "rootBone";
 
-    for (let i = 0; i < pagesData.length; i++) {
+    for (let i = pagesData.length - 1; i >= 0; i--) {
       const bone = new Bone();
       bones.push(bone);
 
-      if (i === 0) {
+      if (i === pagesData.length - 1) {
         rootBone.add(bone);
       } else {
-        const prevBone = bones[i - 1];
+        const prevBone = bones[pagesData.length - i - 2];
         prevBone.add(bone);
       }
 

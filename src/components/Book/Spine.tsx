@@ -163,6 +163,9 @@ export const Spine = forwardRef<SpineActions>((_, ref) => {
     mesh.add(skeleton.bones[0]);
     mesh.bind(skeleton);
 
+    bones[2].rotation.y = -Math.PI / 2;
+    bones[3].rotation.y = -Math.PI / 2;
+
     return { geometry, mesh };
   }, [bones, outsideColor, totalWidth, height, thickness, guardWidth]);
 
@@ -194,7 +197,7 @@ export const Spine = forwardRef<SpineActions>((_, ref) => {
             {
               limit: new Vector3(0, 1, 0),
               index: 1,
-              rotationMin: new Vector3(0, degToRad(45), 0),
+              rotationMin: new Vector3(0, degToRad(-45), 0),
               rotationMax: new Vector3(0, degToRad(360), 0),
             },
           ],

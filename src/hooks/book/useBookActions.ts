@@ -17,8 +17,8 @@ export const useBookActions = (ref: React.Ref<BookActions | null>) => {
   };
 
   const timeout = useRef<number | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [delayedPage, setDelayedPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(2);
+  const [delayedPage, setDelayedPage] = useState<number>(2);
 
   useEffect(() => {
     const goToPage = () => {
@@ -40,7 +40,7 @@ export const useBookActions = (ref: React.Ref<BookActions | null>) => {
             : prevDelayedPage - 1;
 
         // TODO: depois da demo remover restrição de páginas
-        return Math.min(Math.max(nextPage, 1), totalPages + 1);
+        return Math.min(Math.max(nextPage, 1), totalPages + 2);
       });
     };
 
@@ -56,7 +56,6 @@ export const useBookActions = (ref: React.Ref<BookActions | null>) => {
       }
     };
   }, [currentPage, totalPages]);
-
 
   const nextPage = () => {
     setCurrentPage(currentPage + 1);
