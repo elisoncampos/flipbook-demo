@@ -23,28 +23,32 @@ export const PagesGatherer = forwardRef<
   const innerRef = useRef<Group>(null);
   const boneRef = useRef<Bone>(null);
 
-  const turningSpeed = usePageStore((state) => state.turningSpeed);
-
   const { bones } = useBones({ pagesData });
+
   const { openPage, closedPage } = useMemo(
     () => ({
-      openPage: radQuartenion(Math.PI),
+      openPage: radQuartenion(-Math.PI),
       closedPage: radQuartenion(0),
     }),
     []
   );
+
+  const turningSpeed = usePageStore((state) => state.turningSpeed);
+  const pageTotal = usePageStore((state) => state.total);
 
   useImperativeHandle(ref, () => ({
     assingPages(pages: Group[]) {
       if (!bones) return;
 
       pages.forEach((pageGroup, index) => {
-        const bone = bones[index];
+        const reverseIndex = pages.length - index - 1;
+        const bone = bones[reverseIndex];
         if (!bone) {
           throw new Error("Bone not found");
         }
 
         pageGroup.position.x = pagesData[index].thickness / 2;
+        pageGroup.rotation.y = Math.PI;
         bone.add(pageGroup);
       });
     },
@@ -57,7 +61,7 @@ export const PagesGatherer = forwardRef<
     if (!innerRef.current) return;
     if (!bones) return;
 
-    const activeIndex = currentPage;
+    const activeIndex = pageTotal + 2 - currentPage + 1;
 
     bones.forEach((bone, index) => {
       if (index === 0) return;
