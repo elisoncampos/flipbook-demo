@@ -4,6 +4,7 @@ import { FlipbookScene } from "@/components/FlipbookScene";
 import { FlipbookApi } from "@/hooks/flipbook/useFlipbook";
 import { useBookLoader } from "@/hooks/book/useBookLoader";
 import { useBookStore } from "@/stores/book";
+import Loader  from "@/components/Loader";
 
 type FlipbookProps = {
   book: FlipbookApi["book"];
@@ -29,7 +30,7 @@ export const Flipbook = ({
   });
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loader />}>
       {loaded && (
         <Canvas camera={{ position: [0, 3, 10], fov: 45 }} shadows>
           <FlipbookScene bookRef={book.ref} environmentUrl={environmentUrl} />

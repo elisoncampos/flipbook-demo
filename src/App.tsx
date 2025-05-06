@@ -1,7 +1,10 @@
+import { Suspense } from "react";
 import "./App.css";
 import Flipbook from "./components/Flipbook";
 import { useFlipbook } from "./hooks/flipbook/useFlipbook";
 import { crop } from "./utils/crop";
+import { SquareArrowLeft, SquareArrowRight } from "lucide-react";
+import Loader from "./components/Loader";
 
 const App = () => {
   const images = [
@@ -52,22 +55,22 @@ const App = () => {
   const backCover = "https://picsum.photos/id/1/3050/2875";
 
   const { book } = useFlipbook();
-  const { nextPage, prevPage, setPage } = book;
+  const { nextPage, prevPage, } = book;
 
   return (
-    <div>
-      <div
-        style={{
-          margin: "0 auto",
-          width: "fit-content",
-        }}
-      >
-        <button onClick={prevPage}>previousPage</button>
-        <button onClick={() => setPage(5)}>Flip to Page 5</button>
-        <button onClick={nextPage}>nextPage</button>
+    <div className="h-screen w-screen bg-neutral-800">
+      <div className="absolute bottom-2 flex justify-center w-full gap-6">
+        <button className="bg-neutral-700 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:cursor-pointer" onClick={prevPage}>
+          <SquareArrowLeft className="w-4 h-4" />
+          <span className="text-sm">Página anterior</span>
+        </button>
+        <button className="bg-neutral-700 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:cursor-pointer" onClick={nextPage}>
+          <span className="text-sm">Próxima página</span>
+          <SquareArrowRight className="w-4 h-4" />
+        </button>
       </div>
 
-      <div style={{ width: "100vw", height: "100vh" }}>
+      <div className="h-full w-full">
         <Flipbook
           book={book}
           pages={croppedImages}
