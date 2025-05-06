@@ -55,16 +55,22 @@ const App = () => {
   const backCover = "https://picsum.photos/id/1/3050/2875";
 
   const { book } = useFlipbook();
-  const { nextPage, prevPage, } = book;
+  const { nextPage, prevPage } = book;
 
   return (
     <div className="h-screen w-screen bg-neutral-800">
-      <div className="absolute bottom-2 flex justify-center w-full gap-6">
-        <button className="bg-neutral-700 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:cursor-pointer" onClick={prevPage}>
+      <div className="absolute bottom-2 flex justify-center w-full gap-6 z-50">
+        <button
+          className="bg-neutral-700 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:cursor-pointer"
+          onClick={prevPage}
+        >
           <SquareArrowLeft className="w-4 h-4" />
           <span className="text-sm">Página anterior</span>
         </button>
-        <button className="bg-neutral-700 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:cursor-pointer" onClick={nextPage}>
+        <button
+          className="bg-neutral-700 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:cursor-pointer"
+          onClick={nextPage}
+        >
           <span className="text-sm">Próxima página</span>
           <SquareArrowRight className="w-4 h-4" />
         </button>
