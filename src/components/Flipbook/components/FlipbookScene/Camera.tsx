@@ -41,8 +41,8 @@ export const Camera = () => {
       autoRotate={autoRotate}
       autoRotateSpeed={0.5}
       maxPolarAngle={Math.PI / 1.85} // Limitar o ângulo máximo para evitar a visão de baixo
-      minDistance={2}
-      maxDistance={8}
+      minDistance={1}
+      maxDistance={4}
       dampingFactor={0.25}
       enableDamping={true}
     />

@@ -52,7 +52,7 @@ export function useBookLoader({
   const updateCover = useCoverStore((state) => state.updateCover);
   const coverLoaded = useCoverStore((state) => state.loaded);
 
-  const thickness = 0.01;
+  const thickness = 0.005;
   const spineWidth = thickness * (images.length / 2) + thickness * 2;
   const guardWidth = spineWidth / 2;
 

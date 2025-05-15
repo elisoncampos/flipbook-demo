@@ -27,8 +27,8 @@ const App = () => {
     "https://goimage-3d-viewer.s3.sa-east-1.amazonaws.com/projects/5e1decbc9170d30001b259a9/image-18.jpg",
   ];
 
-  const scaledWidth = 2048 * 4;
-  const scaledHeight = 1024 * 4;
+  const scaledWidth = 2048 * 2;
+  const scaledHeight = 1024 * 2;
 
   const croppedImages = images
     .map((image) => {
