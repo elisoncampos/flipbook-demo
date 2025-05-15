@@ -1,4 +1,4 @@
-import { PageState } from "../../types";
+import { PageState } from "../types";
 import { create } from "zustand";
 
 export const usePageStore = create<PageState>((set) => ({
