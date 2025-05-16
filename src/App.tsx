@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import "./App.css";
 import { Flipbook, useFlipbook } from "./components/Flipbook";
 import Loader from "./components/Loader";
@@ -46,6 +47,18 @@ const App = () => {
 
   const { book } = useFlipbook();
   const { nextPage, prevPage, loaded } = book;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        prevPage();
+      } else if (e.key === "ArrowRight") {
+        nextPage();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [nextPage, prevPage]);
 
   return (
     <div className="h-screen w-screen bg-neutral-800">
