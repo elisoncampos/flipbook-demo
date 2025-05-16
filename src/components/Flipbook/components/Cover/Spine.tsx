@@ -96,7 +96,7 @@ export const Spine = forwardRef<SpineObject, SpineProps>(
       // TODO: otimizar isso
       const spinePos = new Vector3(
         middle.x +
-          Math.sin(angle) * (totalOffset - scaledWidth(coverThickness)) -
+          Math.sin(angle) * (totalOffset - scaledWidth(coverThickness) / 2) -
           Math.sin(perpAngle) * (coverGuardWidth - scaledWidth(coverThickness)),
         middle.y,
         middle.z +
