@@ -1,12 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { Flipbook, useFlipbook } from "./components/Flipbook";
 import Loader from "./components/Loader";
+import { useControls } from "leva";
 
 import { crop } from "./utils/crop";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react";
+import { filePicker } from "leva-file-picker";
 
 const App = () => {
+  const [environmentUrl, setEnvironmentUrl] = useState<string>("family-2.jpg");
+
   const images = [
     "https://goimage-3d-viewer.s3.sa-east-1.amazonaws.com/projects/5e1decbc9170d30001b259a9/image-1.jpg",
     "https://goimage-3d-viewer.s3.sa-east-1.amazonaws.com/projects/5e1decbc9170d30001b259a9/image-2.jpg",
@@ -45,6 +49,26 @@ const App = () => {
   const frontCover = crop(cover, scaledWidth, scaledHeight, "cl");
   const backCover = crop(cover, scaledWidth, scaledHeight, "cr");
 
+  useControls({
+    environmentUrl: {
+      value: environmentUrl,
+      onChange: (value) => {
+        setEnvironmentUrl(value);
+      },
+    },
+    environmentImage: filePicker({
+      onChange: async (file) => {
+        if (!file) return;
+
+        const blob = new Blob([file], { type: file.type });
+        const blobUrl = URL.createObjectURL(blob);
+
+        setEnvironmentUrl(blobUrl);
+      },
+      accept: { "image/*": [] },
+    }),
+  });
+
   const { book } = useFlipbook();
   const { nextPage, prevPage, loaded } = book;
 
@@ -59,6 +83,12 @@ const App = () => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [nextPage, prevPage]);
+
+  const proxyUrl = useMemo(() => {
+    return Object.assign(environmentUrl, {
+      startsWith: (prefix: string) => prefix === "data:image/jpeg",
+    });
+  }, [environmentUrl]);
 
   return (
     <div className="h-screen w-screen bg-neutral-800">
@@ -88,7 +118,7 @@ const App = () => {
           guardPageColor="#000000"
           frontCover={frontCover}
           backCover={backCover}
-          environmentUrl="family-2.jpg"
+          environmentUrl={proxyUrl}
           preload={true}
         />
       </div>

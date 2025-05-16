@@ -12,6 +12,8 @@
   "dependencies": {
     "@react-three/drei": "^10.0.7",
     "@tailwindcss/vite": "^4.1.5",
+    "leva": "^0.10.0",
+    "leva-file-picker": "^1.2.3",
     "lucide-react": "^0.507.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
