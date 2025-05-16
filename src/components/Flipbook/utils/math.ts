@@ -1,6 +1,6 @@
 export const pixelToUnit = (pixel: number): number => {
-  return pixel / 1000;
+  return pixel / 750;
 };
 export const unitToPixel = (unit: number): number => {
-  return unit * 1000;
+  return unit * 750;
 };

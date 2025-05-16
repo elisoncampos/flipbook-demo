@@ -51,7 +51,14 @@ export const mergeImages = async ({
     ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
   };
 
-  const sectionWidth = totalWidth / 2;
+  const hasTwoImages = frontImg && backImg;
+
+  const sectionWidth = hasTwoImages ? totalWidth / 2 : totalWidth;
+
+  if (!hasTwoImages && backImg) {
+    frontImg = backImg;
+    backImg = null;
+  }
 
   if (frontImg) drawScaledCentered(frontImg, 0, sectionWidth);
   if (backImg) drawScaledCentered(backImg, sectionWidth, sectionWidth);

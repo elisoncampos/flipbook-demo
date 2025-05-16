@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Group, Object3D, Texture, Vector2 } from "three";
+import { Group, Object3D, SRGBColorSpace, Texture, Vector2 } from "three";
 import { CoverPage } from "./CoverPage";
 import { Spine } from "./Spine";
 import { useFrame } from "@react-three/fiber";
@@ -23,9 +23,13 @@ interface Slice {
 
 type Slices = Record<string, Slice>;
 
-const loadImage = (src: string): Promise<HTMLImageElement> =>
+const loadImage = (src: string | null): Promise<HTMLImageElement | null> =>
   new Promise((resolve, reject) => {
+    
     const img = new Image();
+    if (!src) {
+      return resolve(null);
+    }
     img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = reject;
@@ -51,6 +55,7 @@ const createTextureFromCanvas = async (
   await waitForImageLoad(img);
 
   const texture = new Texture(img);
+  texture.colorSpace = SRGBColorSpace;
   texture.needsUpdate = true;
   return texture;
 };
@@ -177,7 +182,7 @@ export const Cover = forwardRef<CoverObject>((_, ref) => {
         throw new Error("references is not initialized.");
       }
 
-      const offset = coverRealWidth / 2 + coverGuardWidth - coverThickness / 2;
+      const offset = coverRealWidth / 2 + coverGuardWidth - coverThickness;
 
       return Object.assign(frontRef.current, {
         appendFrontTo(group: Group, xOffset: number = 0) {

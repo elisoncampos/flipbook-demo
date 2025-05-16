@@ -10,7 +10,11 @@ import { Group, Object3D, Vector2, Vector3 } from "three";
 import { CoverPage } from "./CoverPage";
 import { useCoverStore } from "../../stores/cover";
 import { SpineObject, SpineProps } from "../../types";
-import { useFlipperStore } from "../../stores/flipper";
+import { scaleFactor } from "../constants";
+
+const scaledWidth = (width: number) => {
+  return width * scaleFactor;
+};
 
 export const Spine = forwardRef<SpineObject, SpineProps>(
   (
@@ -31,13 +35,6 @@ export const Spine = forwardRef<SpineObject, SpineProps>(
     const coverSpineWidth = useCoverStore((state) => state.spineWidth);
     const coverThickness = useCoverStore((state) => state.thickness);
     const coverHeight = useCoverStore((state) => state.totalHeight);
-
-    const currentPage = useFlipperStore((state) => state.currentPage);
-    const totalPages = useFlipperStore((state) => state.totalPages);
-
-    const isClosed = useMemo(() => {
-      return currentPage < 1 || currentPage >= totalPages + 1;
-    }, [currentPage, totalPages]);
 
     const anchors = useMemo(() => {
       return {
@@ -86,40 +83,31 @@ export const Spine = forwardRef<SpineObject, SpineProps>(
       );
 
       // Ângulo entre os pivots (linha ligando back → front).
-      const angle = -Math.atan2(
+      let angle = -Math.atan2(
         frontAnchorPos.z - backAnchorPos.z,
         frontAnchorPos.x - backAnchorPos.x
       );
 
-      const distance = new Vector2(
-        frontAnchorPos.x,
-        frontAnchorPos.z
-      ).distanceTo(new Vector2(backAnchorPos.x, backAnchorPos.z));
+      // Ângulo perpendicular ao ângulo do dorso
+      const perpAngle = angle + Math.PI / 2;
 
-      let guardOffset = coverGuardWidth;
-      if (distance !== coverSpineWidth) {
-        const diffHalf = Math.abs(coverSpineWidth - distance) / 2;
-        guardOffset = Math.sqrt(
-          Math.abs(Math.pow(coverGuardWidth, 2) - Math.pow(diffHalf, 2))
-        );
-      }
-      const totalOffset = guardOffset - coverThickness / 2;
+      const totalOffset = scaledWidth(coverGuardWidth);
 
-      const heightOffset = isClosed ? 0 : coverThickness;
-
+      // TODO: otimizar isso
       const spinePos = new Vector3(
         middle.x +
-          Math.sin(angle) * totalOffset +
-          Math.sin(angle) * heightOffset,
+          Math.sin(angle) * (totalOffset - scaledWidth(coverThickness)) -
+          Math.sin(perpAngle) * (coverGuardWidth - scaledWidth(coverThickness)),
         middle.y,
         middle.z +
-          Math.cos(angle) * totalOffset +
-          Math.cos(angle) * heightOffset
+          Math.sin(perpAngle) * (totalOffset - scaledWidth(coverThickness)) +
+          (Math.cos(angle) * scaledWidth(coverGuardWidth)) / 4
       );
+
+      spine.rotation.y = angle;
 
       spine.parent?.worldToLocal(spinePos);
       spinePos.y = spine.position.y;
-      spine.rotation.y = angle;
       spine.position.copy(spinePos);
       spine.updateMatrixWorld(true);
 
@@ -131,17 +119,34 @@ export const Spine = forwardRef<SpineObject, SpineProps>(
         new Vector3()
       );
 
+      const distanceToFrontGuard =
+        frontGuardAnchorPos.distanceTo(frontAnchorPos);
+
+      const distanceToBackGuard = backGuardAnchorPos.distanceTo(backAnchorPos);
+
+      const error = distanceToFrontGuard - distanceToBackGuard;
+      const correction = error * 0.35 * (1 / totalOffset); // fator inverso do raio
+
+      angle += correction;
+
+      spine.rotation.y = angle;
+
+      backGuardAnchorPos.copy(
+        anchors.backGuard.getWorldPosition(new Vector3())
+      );
+      frontGuardAnchorPos.copy(
+        anchors.frontGuard.getWorldPosition(new Vector3())
+      );
+
       positionGuard(frontGuard, frontAnchorPos, frontGuardAnchorPos);
       positionGuard(backGuard, backGuardAnchorPos, backAnchorPos);
     }, [
-      frontAnchor,
+      anchors.backGuard,
+      anchors.frontGuard,
       backAnchor,
       coverGuardWidth,
-      coverSpineWidth,
       coverThickness,
-      isClosed,
-      anchors.frontGuard,
-      anchors.backGuard,
+      frontAnchor,
       positionGuard,
     ]);
 

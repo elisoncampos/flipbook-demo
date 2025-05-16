@@ -27,7 +27,8 @@ export const Camera = () => {
 
   const position = useMemo(() => {
     const x = 0;
-    const y = coverHeight / 2;
+    // pra compensar o scale;
+    const y = coverHeight * 4;
     const z = 0;
     return new Vector3(x, y, z);
   }, [coverHeight]);
@@ -42,7 +43,7 @@ export const Camera = () => {
       autoRotateSpeed={0.5}
       maxPolarAngle={Math.PI / 1.85} // Limitar o ângulo máximo para evitar a visão de baixo
       minDistance={1}
-      maxDistance={4}
+      maxDistance={16}
       dampingFactor={0.25}
       enableDamping={true}
     />

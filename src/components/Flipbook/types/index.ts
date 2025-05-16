@@ -93,6 +93,8 @@ export interface BookSettings {
   };
   cover: {
     loaded: boolean;
+    imagesWidth: number;
+    imagesHeight: number;
     totalWidth: number;
     coverWidth: number;
     totalHeight: number;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useBookStore } from "../../stores/book";
 import { usePageStore } from "../../stores/page";
 import { useCoverStore } from "../../stores/cover";
@@ -9,9 +9,19 @@ import { pixelToUnit } from "../../utils/math";
 
 const calculateSize = (image: HTMLImageElement | null) => {
   if (!image) return null;
+
+  const maxWidth = 2048;
+
+  const originalWidth = image.width;
+  const originalHeight = image.height;
+
+  const clampedWidth = Math.min(originalWidth, maxWidth);
+  const aspectRatio = originalHeight / originalWidth;
+  const clampedHeight = clampedWidth * aspectRatio;
+
   return {
-    width: pixelToUnit(image.width),
-    height: pixelToUnit(image.height),
+    width: pixelToUnit(clampedWidth),
+    height: pixelToUnit(clampedHeight),
   };
 };
 
@@ -24,6 +34,15 @@ const loadImage = (src: string) => {
     if (img.complete) resolve(img);
   });
 };
+
+const calculateSpineWidth = (thickness: number, totalImages: number) => {
+  const spineWidth = thickness * Math.ceil(totalImages / 2) + thickness / 4
+  return spineWidth;
+};
+
+const testedWidth = pixelToUnit(8192);
+const idealThickness = 0.035;
+const idealMargin = 0.2;
 
 export function useBookLoader({
   images,
@@ -44,17 +63,17 @@ export function useBookLoader({
 
   const setTotalPages = useFlipperStore((state) => state.setTotalPages);
   const updateBook = useBookStore((state) => state.updateBook);
+  const loaded = useBookStore((state) => state.loaded);
   const componentReady = useBookStore((state) => state.componentReady);
 
   const updatePage = usePageStore((state) => state.updatePage);
   const pageLoaded = usePageStore((state) => state.loaded);
+  const pageWidth = usePageStore((state) => state.width);
 
   const updateCover = useCoverStore((state) => state.updateCover);
   const coverLoaded = useCoverStore((state) => state.loaded);
-
-  const thickness = 0.005;
-  const spineWidth = thickness * (images.length / 2) + thickness * 2;
-  const guardWidth = spineWidth / 2;
+  const coverWidth = useCoverStore((state) => state.imagesWidth);
+  const coverHeight = useCoverStore((state) => state.imagesHeight);
 
   useEffect(() => {
     updateBook({ images });
@@ -73,25 +92,10 @@ export function useBookLoader({
           loaded: true,
           width,
           height,
-          thickness,
-        });
-
-        updateCover({
-          thickness: thickness * 2,
-          spineWidth,
-          guardWidth,
         });
       })
       .catch(() => updatePage({ loaded: true }));
-  }, [
-    guardWidth,
-    images,
-    setTotalPages,
-    spineWidth,
-    updateBook,
-    updateCover,
-    updatePage,
-  ]);
+  }, [images, setTotalPages, updateBook, updateCover, updatePage]);
 
   useEffect(() => {
     updateBook({
@@ -107,47 +111,97 @@ export function useBookLoader({
   }, [guardPageColor, hasGuardPage, images.length, setTotalPages, updateBook]);
 
   useEffect(() => {
-    const coverImg = frontCover || backCover;
+    const hasFront = !!frontCover;
+    const hasBack = !!backCover;
 
-    if (!coverImg) {
+    if (!hasFront && !hasBack) {
       updateCover({ loaded: true });
       return;
     }
 
-    loadImage(coverImg)
-      .then((image) => {
-        const size = calculateSize(image);
-        if (!size) return;
+    const maybeLoadImage = (src: string | null | undefined) => {
+      return src ? loadImage(src) : Promise.resolve(null);
+    };
 
-        const widthAdjustment = spineWidth + thickness * 2;
+    Promise.all([maybeLoadImage(frontCover), maybeLoadImage(backCover)])
+      .then(([frontImg, backImg]) => {
+        let totalWidth = 0;
+        let height = 0;
 
-        const margin = 0.04 * 2; // 4mm de cada lado
-        let totalWidth = frontCover && backCover ? size.width * 2 : size.width;
-        totalWidth += margin;
-        const aspectRatio = size.height / totalWidth;
+        const frontSize = calculateSize(frontImg);
+        if (frontSize) {
+          totalWidth += frontSize.width;
+          height = Math.max(height, frontSize.height);
+        }
 
-        // somando a largura da lombada pra não parecer que a capa é menor que a pagina
-        totalWidth += widthAdjustment;
-
-        // Mantém o aspecto da imagem da capa original
-        const totalHeight = totalWidth * aspectRatio;
+        const backSize = calculateSize(backImg);
+        if (backSize) {
+          totalWidth += backSize.width;
+          height = Math.max(height, backSize.height);
+        }
 
         updateCover({
           loaded: true,
-          totalWidth,
-          totalHeight,
+          imagesWidth: totalWidth,
+          imagesHeight: height,
           front: frontCover,
           back: backCover,
         });
       })
-      .catch(() => updateCover({ loaded: true }));
-  }, [frontCover, backCover, updateCover, spineWidth]);
+      .catch(() => {
+        updateCover({ loaded: true });
+      });
+  }, [frontCover, backCover, updateCover]);
+
+  const calculateDimensions = useCallback(() => {
+    const thickness = idealThickness * (pageWidth / testedWidth);
+    updatePage({
+      thickness,
+    });
+
+    const spineWidth = calculateSpineWidth(thickness, images.length);
+    let coverAdjustedWidth = coverWidth;
+
+    const margin = idealMargin * (coverWidth / testedWidth);
+    coverAdjustedWidth += margin;
+
+    const aspectRatio = coverHeight / coverAdjustedWidth;
+
+    // somando a largura da lombada pra não parecer que a capa é menor que a pagina
+    coverAdjustedWidth += spineWidth;
+
+    // Mantém o aspecto da imagem da capa original
+    const coverAdjustedHeight = coverAdjustedWidth * aspectRatio;
+
+    updateCover({
+      thickness: thickness * 2,
+      spineWidth: calculateSpineWidth(thickness, images.length),
+      guardWidth: spineWidth / 2,
+      totalWidth: coverAdjustedWidth,
+      totalHeight: coverAdjustedHeight,
+    });
+  }, [
+    coverHeight,
+    coverWidth,
+    images.length,
+    pageWidth,
+    updateCover,
+    updatePage,
+  ]);
 
   useEffect(() => {
-    if (pageLoaded && coverLoaded && imagesLoaded) {
+    if (pageLoaded && coverLoaded && imagesLoaded && !loaded) {
+      calculateDimensions();
       updateBook({ imagesLoaded: true });
     }
-  }, [pageLoaded, coverLoaded, updateBook, imagesLoaded]);
+  }, [
+    pageLoaded,
+    coverLoaded,
+    updateBook,
+    imagesLoaded,
+    loaded,
+    calculateDimensions,
+  ]);
 
   useEffect(() => {
     if (imagesLoaded && componentReady) {

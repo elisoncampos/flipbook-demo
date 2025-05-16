@@ -13,12 +13,14 @@ export const useCoverStore = create<CoverState>((set, get) => {
 
   return {
     loaded: false,
+    front: null,
+    back: null,
+    imagesWidth: 0,
+    imagesHeight: 0,
     totalWidth: 0,
     totalHeight: 0,
     coverWidth: 0,
     thickness: 0,
-    front: null,
-    back: null,
     insideColor: "#afafaf",
     outsideColor: "#5f5f5f",
     spineWidth: 0,

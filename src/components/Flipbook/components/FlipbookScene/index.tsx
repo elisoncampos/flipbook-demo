@@ -4,13 +4,14 @@ import { Camera } from "./Camera";
 import { FlipbookEnvironment } from "./FlipbookEnvironment";
 import { FlipbookSceneProps } from "../../types";
 import { useMemo } from "react";
+import { scaleFactor } from "../constants";
 
 export const FlipbookScene = ({ environmentUrl }: FlipbookSceneProps) => {
   return useMemo(
     () => (
       <group>
         <FlipbookEnvironment environmentUrl={environmentUrl} />
-        <group>
+        <group scale={[scaleFactor, scaleFactor, scaleFactor]}>
           <Book />
           <Table />
         </group>

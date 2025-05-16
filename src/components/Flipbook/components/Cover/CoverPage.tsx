@@ -1,12 +1,6 @@
-import { useSharedMaterials } from "../../hooks/utils/useSharedMaterials";
 import { CoverPartProps } from "../../types";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
 import { Group, MeshStandardMaterial } from "three";
-
-const sharedMaterials = Array.from(
-  { length: 6 },
-  () => new MeshStandardMaterial({ color: "gray" })
-);
 
 export const CoverPage = forwardRef<Group, CoverPartProps>(
   ({ size, thickness, position, visible = true, texture }, ref) => {
@@ -14,14 +8,30 @@ export const CoverPage = forwardRef<Group, CoverPartProps>(
 
     useImperativeHandle(ref, () => groupRef.current as Group, []);
 
-    const materials = useSharedMaterials({
-      baseMaterials: sharedMaterials,
-      textures: [{ texture: texture, index: 4 }],
-    });
+    const materials = useMemo(() => {
+      if (!texture) return undefined;
+
+      return Array.from({ length: 6 }, (_, i) => {
+        const isInvertedFace = i === 5;
+
+        // preciso clonar a textura para não afetar as outras faces
+        const map = isInvertedFace ? texture.clone() : texture;
+        const material = new MeshStandardMaterial({ map });
+        material.name = `material-${i}`;
+
+        if (isInvertedFace && map) {
+          map.repeat.x = -1;
+          map.offset.x = 1;
+          map.needsUpdate = true;
+        }
+
+        return material;
+      });
+    }, [texture]);
 
     return (
       <group ref={groupRef} position={position}>
-        <mesh material={materials} visible={visible}>
+        <mesh visible={visible} material={materials}>
           <boxGeometry args={[size.x, size.y, thickness]} />
         </mesh>
       </group>
