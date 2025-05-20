@@ -1,7 +1,7 @@
 import { useCoverStore } from "../../stores/cover";
 import { TableProps } from "../../types";
 import { forwardRef, useMemo } from "react";
-import { Group, FrontSide, BoxGeometry, Vector3 } from "three";
+import { Group, FrontSide } from "three";
 import { useControls } from "leva";
 
 const tableTextures = {
