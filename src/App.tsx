@@ -9,7 +9,7 @@ import { SquareArrowLeft, SquareArrowRight } from "lucide-react";
 import { filePicker } from "leva-file-picker";
 
 const App = () => {
-  const [environmentUrl, setEnvironmentUrl] = useState<string>("family-2.jpg");
+  const [environmentUrl, setEnvironmentUrl] = useState<string>("lounge.jpg");
 
   const images = [
     "https://goimage-3d-viewer.s3.sa-east-1.amazonaws.com/projects/5e1decbc9170d30001b259a9/image-1.jpg",
